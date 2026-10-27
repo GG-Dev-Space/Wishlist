@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -45,12 +45,12 @@
       padding-top: env(safe-area-inset-top);
     }
 
-    .wrap { max-width: 520px; margin: 0 auto; padding: 20px 16px 140px; }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 24px 16px 140px; }
 
-    header { text-align: center; padding: 8px 0 20px; }
+    header { text-align: center; padding: 8px 0 24px; }
     .eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-    h1 { font: 600 34px/1.1 'Cormorant Garamond', Georgia, serif; margin: 6px 0 4px; color: var(--ink); }
-    .sub { color: var(--ink-2); font-size: 14px; margin: 0; }
+    h1 { font: 600 36px/1.1 'Cormorant Garamond', Georgia, serif; margin: 6px 0 6px; color: var(--ink); }
+    .sub { color: var(--ink-2); font-size: 15px; margin: 0; }
 
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
     .card h2 { font: 600 13px/1 Inter, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 14px; }
@@ -123,18 +123,32 @@
     .review .item:first-child { border-top: 0; }
     .review .item .s { color: var(--ink-3); font-size: 13px; font-variant-numeric: tabular-nums; }
 
-    .done { text-align: center; padding: 40px 10px; }
-    .done .n { font: 600 64px/1 'Cormorant Garamond', serif; color: var(--gold); margin: 10px 0; }
+    /* Enhanced Thank You Screen */
+    .done { text-align: center; padding: 36px 14px 20px; }
+    .done-heading { font: 600 42px/1.1 'Cormorant Garamond', Georgia, serif; color: var(--ink); margin: 12px 0 10px; }
+    .done-text { font-size: 17px; line-height: 1.5; color: var(--ink-2); margin: 0 0 28px; }
+    .done-callout {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 22px 18px;
+      margin-top: 12px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+    }
+    .callout-eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 6px; }
+    .callout-time { font: 600 26px/1.2 'Cormorant Garamond', Georgia, serif; color: var(--ink); margin: 0 0 6px; }
+    .callout-note { font-size: 14px; color: var(--ink-2); margin: 0; font-weight: 500; }
+
     .loading { text-align: center; color: var(--ink-3); padding: 60px 0; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div class="wrap" id="appWrap">
-    <header>
+    <header id="pageHeader">
       <div class="eyebrow">Gem Gallery</div>
       <h1>Ladies Night Wishlist</h1>
-      <p class="sub">One entry per guest. Up to 5 pieces.</p>
+      <p class="sub">One entry per guest.</p>
     </header>
 
     <div id="loading" class="loading">Loading inventory…</div>
@@ -146,8 +160,8 @@
       <div class="card">
         <h2>Associate</h2>
         <div class="field">
-          <label for="associate">Your name</label>
-          <input id="associate" type="text" autocapitalize="words" value="">
+          <label for="associate">Associate</label>
+          <input id="associate" type="text" autocapitalize="words" placeholder="Enter associate name (optional)">
         </div>
       </div>
 
@@ -208,9 +222,15 @@
 
     <!-- Step 3: done -->
     <div id="done" class="hidden done">
-      <div class="eyebrow">Entry recorded</div>
-      <div class="n" id="doneNo"></div>
-      <p class="sub" id="doneMsg"></p>
+      <div class="eyebrow">Entry Confirmed</div>
+      <h2 class="done-heading" id="doneHeading">Thank You!</h2>
+      <p class="done-text" id="doneMsg"></p>
+
+      <div class="done-callout">
+        <div class="callout-eyebrow">Raffle Drawing</div>
+        <div class="callout-time">7:45 PM Tonight</div>
+        <p class="callout-note">Please note: You must be present at the time of the drawing to win.</p>
+      </div>
     </div>
   </div>
 
@@ -395,17 +415,18 @@
       })
       .then(function(r) { return r.json(); })
       .then(function(res) {
-        if (res.status === 'success') handleSubmitSuccess(res);
+        if (res.status === 'success') handleSubmitSuccess();
         else handleSubmitError(res);
       })
       .catch(handleSubmitError);
     }
 
-    function handleSubmitSuccess(r) {
+    function handleSubmitSuccess() {
       var btn = $('mainBtn');
       btn.disabled = false;
-      $('doneNo').textContent = '#' + r.entryNo;
-      $('doneMsg').textContent = 'Raffle entry saved for ' + $('first').value.trim() + '. Good luck tonight.';
+      var guestName = $('first').value.trim();
+      $('doneHeading').textContent = 'Thank You, ' + guestName + '!';
+      $('doneMsg').textContent = 'Your wishlist has been submitted and your raffle ticket is entered.';
       show('done');
     }
 
@@ -430,6 +451,7 @@
       $('form').classList.toggle('hidden', s !== 'form');
       $('review').classList.toggle('hidden', s !== 'review');
       $('done').classList.toggle('hidden', s !== 'done');
+      $('pageHeader').classList.toggle('hidden', s === 'done');
       $('backBtn').classList.toggle('hidden', s !== 'review');
       $('mainBtn').textContent = s === 'form' ? 'Review entry' : s === 'review' ? 'Submit entry' : 'Next guest';
       window.scrollTo(0, 0);
