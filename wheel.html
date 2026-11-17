@@ -5,26 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex">
   <title>Ladies Night Raffle | Gem Gallery</title>
-  <meta name="theme-color" content="#121722">
+  <meta name="theme-color" content="#24101b">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --night: #121722;
-      --ink: #1d2433;
-      --sapphire: #2c4566;
-      --gold: #b8955a;
-      --gold-hi: #e2c88f;
-      --paper: #f7f4ee;
-      --mute: rgba(247,244,238,.55);
+      /* Ladies Night: rose + champagne */
+      --night: #24101b;      /* deep wine rose, background */
+      --ink: #3b1428;        /* rosewood, outlines and dark text */
+      --berry: #7a2a4b;      /* deep rose */
+      --rose: #d3849c;       /* rose */
+      --gold: #c9a46a;       /* champagne gold */
+      --gold-hi: #f1dcb6;    /* light champagne */
+      --paper: #fdf1ec;      /* blush white */
+      --mute: rgba(253,241,236,.6);
       --serif: 'Cormorant Garamond', Georgia, serif;
       --sans: Inter, system-ui, -apple-system, sans-serif;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; background: var(--night); color: var(--paper); overflow: hidden;
       font: 16px/1.4 var(--sans); -webkit-font-smoothing: antialiased; }
-    body { background: radial-gradient(120% 90% at 50% 45%, #1c2436 0%, var(--night) 60%, #0b0f17 100%); }
+    body { background: radial-gradient(120% 90% at 50% 45%, #4a1d33 0%, var(--night) 58%, #14070f 100%); }
 
     .stage { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr auto; align-items: center; justify-items: center;
       padding: max(2.5vh, env(safe-area-inset-top)) 3vw max(2.5vh, env(safe-area-inset-bottom)); }
@@ -45,7 +47,7 @@
 
     .hub { position: absolute; left: 50%; top: 50%; width: 21%; height: 21%; transform: translate(-50%, -50%); border-radius: 50%;
       border: 0; cursor: pointer; z-index: 2; color: var(--ink);
-      background: radial-gradient(circle at 35% 30%, #fff8e6 0%, var(--gold-hi) 32%, var(--gold) 70%, #8a6c3c 100%);
+      background: radial-gradient(circle at 35% 30%, #fff6ee 0%, var(--gold-hi) 30%, #d9a98f 68%, #9c6152 100%);
       box-shadow: 0 0 0 calc(var(--size) * .008) var(--ink), 0 1vh 3vh rgba(0,0,0,.45), inset 0 -0.6vh 1.4vh rgba(0,0,0,.25);
       font: 700 calc(var(--size) * .042)/1 var(--serif); letter-spacing: .06em; text-transform: uppercase;
       transition: transform .15s ease, filter .2s; }
@@ -62,18 +64,18 @@
 
     /* Winner */
     .reveal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; text-align: center;
-      background: radial-gradient(70% 60% at 50% 50%, rgba(18,23,34,.82), rgba(8,10,16,.94)); opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+      background: radial-gradient(70% 60% at 50% 50%, rgba(36,16,27,.84), rgba(18,6,12,.95)); opacity: 0; pointer-events: none; transition: opacity .5s ease; }
     .reveal.show { opacity: 1; pointer-events: auto; }
     .reveal .card { transform: translateY(2vh) scale(.96); transition: transform .7s cubic-bezier(.2,.8,.2,1); }
     .reveal.show .card { transform: none; }
     .reveal .eyebrow { font-size: clamp(12px, 1.6vh, 20px); }
     .reveal .who { font: 600 clamp(56px, 13vh, 170px)/1 var(--serif); margin: 2.4vh 0 1.6vh; letter-spacing: -.005em;
-      background: linear-gradient(180deg, #fff6df 0%, var(--gold-hi) 45%, var(--gold) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      background: linear-gradient(180deg, #fff6ee 0%, var(--gold-hi) 42%, #e3a3b4 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .reveal .meta { font-size: clamp(14px, 2vh, 24px); letter-spacing: .22em; text-transform: uppercase; color: var(--mute); font-variant-numeric: tabular-nums; }
     .reveal .actions { margin-top: 5vh; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
     canvas#sparkle { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
 
-    .btn { font: 600 clamp(14px, 1.6vh, 18px) var(--sans); border-radius: 999px; padding: 1.3vh 2.6vh; cursor: pointer; border: 1px solid rgba(226,200,143,.45);
+    .btn { font: 600 clamp(14px, 1.6vh, 18px) var(--sans); border-radius: 999px; padding: 1.3vh 2.6vh; cursor: pointer; border: 1px solid rgba(241,220,182,.45);
       background: transparent; color: var(--paper); transition: background .2s, color .2s, border-color .2s; }
     .btn:hover { border-color: var(--gold-hi); }
     .btn.solid { background: var(--gold); border-color: var(--gold); color: var(--ink); }
@@ -90,10 +92,10 @@
     .controls .btn { padding: 1vh 1.8vh; font-size: clamp(12px, 1.4vh, 15px); }
     body.idle .controls, body.idle .status { opacity: 0; }
     .status { position: fixed; right: 3vw; top: 3vh; font-size: clamp(11px, 1.3vh, 14px); color: var(--mute); transition: opacity .4s; z-index: 3; }
-    .status.err { color: #e69a8f; opacity: 1 !important; }
+    .status.err { color: #ffb3a8; opacity: 1 !important; }
 
     .gate { position: fixed; inset: 0; display: grid; place-items: center; z-index: 20; background: var(--night); text-align: center; padding: 24px; }
-    .gate input { font: 500 18px var(--sans); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(226,200,143,.4); background: #0e131c; color: var(--paper); width: min(360px, 80vw); margin: 18px 0; text-align: center; }
+    .gate input { font: 500 18px var(--sans); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(241,220,182,.4); background: #1b0a13; color: var(--paper); width: min(360px, 80vw); margin: 18px 0; text-align: center; }
     .hidden { display: none !important; }
     @media (prefers-reduced-motion: reduce) { .reveal .card { transition: none; } }
   </style>
@@ -108,9 +110,9 @@
 
     <div class="wheelwrap" id="wrap">
       <div class="pointer" id="pointer" aria-hidden="true">
-        <svg viewBox="0 0 60 80"><defs><linearGradient id="pg" x1="0" x2="1"><stop offset="0" stop-color="#e2c88f"/><stop offset=".5" stop-color="#fff3d6"/><stop offset="1" stop-color="#a8874a"/></linearGradient></defs>
-          <path d="M30 78 L4 16 A28 28 0 0 1 56 16 Z" fill="url(#pg)" stroke="#1d2433" stroke-width="3" stroke-linejoin="round"/>
-          <circle cx="30" cy="20" r="7" fill="#1d2433"/></svg>
+        <svg viewBox="0 0 60 80"><defs><linearGradient id="pg" x1="0" x2="1"><stop offset="0" stop-color="#f1dcb6"/><stop offset=".5" stop-color="#fff6ee"/><stop offset="1" stop-color="#b97f6a"/></linearGradient></defs>
+          <path d="M30 78 L4 16 A28 28 0 0 1 56 16 Z" fill="url(#pg)" stroke="#3b1428" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="30" cy="20" r="7" fill="#3b1428"/></svg>
       </div>
       <canvas id="wheel"></canvas>
       <button class="hub" id="spin" type="button" aria-label="Spin the wheel">Spin</button>
@@ -165,8 +167,8 @@
       refreshMs: 20000,
       spinSeconds: [9, 11],            // random duration within this range
       turns: [7, 10],                  // full rotations before landing
-      colors: ['#1d2433', '#b8955a', '#2c4566', '#f2ece0'],
-      textOn: { '#1d2433': '#f7f4ee', '#b8955a': '#1d2433', '#2c4566': '#f7f4ee', '#f2ece0': '#1d2433' },
+      colors: ['#7a2a4b', '#ecd6b2', '#d3849c', '#c9a46a'],   // deep rose, champagne, rose, champagne gold
+      textOn: { '#7a2a4b': '#fbe8dc', '#ecd6b2': '#3b1428', '#d3849c': '#2e0c1e', '#c9a46a': '#2e0c1e' },
       maxLabels: 90,                   // above this, names show only in the ticker
       maxPegs: 120
     };
@@ -255,12 +257,12 @@
       // Outer gold rim
       var rim = R * 0.965, face = R * 0.9;
       var g = cctx.createLinearGradient(-R, -R, R, R);
-      g.addColorStop(0, '#e2c88f'); g.addColorStop(.5, '#8a6c3c'); g.addColorStop(1, '#d9bd84');
+      g.addColorStop(0, '#f2cdb4'); g.addColorStop(.5, '#a8665a'); g.addColorStop(1, '#e7b79c');   // rose gold rim
       cctx.beginPath(); cctx.arc(0, 0, rim, 0, Math.PI * 2); cctx.fillStyle = g; cctx.fill();
-      cctx.beginPath(); cctx.arc(0, 0, face + R * 0.012, 0, Math.PI * 2); cctx.fillStyle = '#1d2433'; cctx.fill();
+      cctx.beginPath(); cctx.arc(0, 0, face + R * 0.012, 0, Math.PI * 2); cctx.fillStyle = '#3b1428'; cctx.fill();
 
       if (!n) {
-        cctx.beginPath(); cctx.arc(0, 0, face, 0, Math.PI * 2); cctx.fillStyle = '#1a2130'; cctx.fill();
+        cctx.beginPath(); cctx.arc(0, 0, face, 0, Math.PI * 2); cctx.fillStyle = '#3a1628'; cctx.fill();
         cctx.restore(); return;
       }
 
@@ -272,7 +274,7 @@
         var a0 = -Math.PI / 2 + i * step, a1 = a0 + step, col = palette[i % palette.length];
         cctx.beginPath(); cctx.moveTo(0, 0); cctx.arc(0, 0, face, a0, a1); cctx.closePath();
         cctx.fillStyle = col; cctx.fill();
-        if (n <= 240) { cctx.strokeStyle = 'rgba(18,23,34,.35)'; cctx.lineWidth = Math.max(1, R * 0.002); cctx.stroke(); }
+        if (n <= 240) { cctx.strokeStyle = 'rgba(36,16,27,.35)'; cctx.lineWidth = Math.max(1, R * 0.002); cctx.stroke(); }
       }
 
       // Labels
@@ -283,7 +285,7 @@
         for (var j = 0; j < n; j++) {
           var mid = -Math.PI / 2 + (j + 0.5) * step, colr = palette[j % palette.length];
           cctx.save(); cctx.rotate(mid);
-          cctx.fillStyle = CONFIG.textOn[colr] || '#f7f4ee';
+          cctx.fillStyle = CONFIG.textOn[colr] || '#fdf1ec';
           var label = slots[j].name, maxW = face * 0.66;
           while (cctx.measureText(label).width > maxW && label.length > 3) label = label.slice(0, -2) + '…';
           cctx.fillText(label, face * 0.93, 0);
@@ -296,11 +298,11 @@
       for (var k = 0; k < pegs; k++) {
         var pa = -Math.PI / 2 + k * pstep, pr = (rim + face) / 2;
         cctx.beginPath(); cctx.arc(Math.cos(pa) * pr, Math.sin(pa) * pr, R * 0.012, 0, Math.PI * 2);
-        cctx.fillStyle = '#fff3d6'; cctx.fill();
+        cctx.fillStyle = '#fff1e3'; cctx.fill();
       }
 
       // Inner ring under the hub
-      cctx.beginPath(); cctx.arc(0, 0, R * 0.235, 0, Math.PI * 2); cctx.fillStyle = 'rgba(18,23,34,.55)'; cctx.fill();
+      cctx.beginPath(); cctx.arc(0, 0, R * 0.235, 0, Math.PI * 2); cctx.fillStyle = 'rgba(36,16,27,.55)'; cctx.fill();
       cctx.restore();
     }
 
@@ -393,7 +395,7 @@
     var sp = $('sparkle'), sx = sp.getContext('2d'), parts = [];
     function sparkle() {
       sp.width = innerWidth * dpr; sp.height = innerHeight * dpr;
-      var cols = ['#e2c88f', '#fff3d6', '#b8955a', '#f7f4ee', '#6f8fb8'];
+      var cols = ['#f1dcb6', '#fff6ee', '#d3849c', '#c9a46a', '#f4b8c8'];
       for (var i = 0; i < 220; i++) {
         var a = rand() * Math.PI * 2, v = (4 + rand() * 11) * dpr;
         parts.push({ x: sp.width / 2, y: sp.height * 0.46, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 5 * dpr,
