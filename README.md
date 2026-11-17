@@ -9,6 +9,7 @@ Event wishlist and raffle intake for Ladies Night. One form for associates and c
 | `index.html` | The wishlist page | GitHub Pages |
 | `apps-script/Code.gs` | Web app API: inventory, submissions, duplicate guard | Google Apps Script (bound to the Wishlist sheet) |
 | `apps-script/Shopify.gs` | Shopify product sync and inventory merge | Google Apps Script (same project) |
+| `wheel.html` | Raffle prize wheel for the in-store display | GitHub Pages |
 
 **This repo is the source of truth.** Edit here, then paste the Apps Script files into the editor and redeploy. Never commit credentials; Shopify keys live only in Apps Script Script Properties.
 
@@ -63,3 +64,14 @@ An empty or failed Shopify sync always falls back to the Inventory tab.
 - Associates type their name once per device; it is remembered.
 - Customers scan a QR code to the page and fill everything in themselves.
 - On weak wifi, entries save on the device and sync automatically. Keep the page open until the "waiting to sync" pill clears.
+
+## Raffle wheel
+
+`wheel.html` spins through tonight's entries from the Submissions tab.
+
+- **Setup once:** run `setupWheel` in Apps Script. The log prints the wheel link with its key. Open it once per display; the key is remembered.
+- **What it shows:** entry number and first name + last initial only. One slot per guest (duplicate phone numbers keep the earliest entry).
+- **Which entries:** today's by default. Add `?since=all` or `?since=2026-11-19` to change.
+- **Controls:** Space or the hub to spin, F full screen, R refresh, M sound. New entries load every 20 seconds between spins.
+- **Winners:** "Remove and spin again" takes the winner out and spins for the next prize. Drawn winners are remembered on that display; "Reset winners" puts them back.
+- **Rehearse:** `wheel.html?demo=150` spins 150 sample names; nothing is read from the sheet.

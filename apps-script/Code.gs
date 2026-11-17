@@ -26,7 +26,60 @@ function doGet(e) {
       .createTextOutput(JSON.stringify({ status: 'success', inventory: inv }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+  if (e && e.parameter && e.parameter.action === 'getEntries') {
+    let out;
+    try { out = { status: 'success', entries: getEntries_(e.parameter) }; }
+    catch (err) { out = { status: 'error', message: err.message }; }
+    return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+  }
   return ContentService.createTextOutput("Ladies Night Wishlist API Active.");
+}
+
+/* ------------------------------------------------------------------ */
+/* Prize wheel feed                                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Raffle entries for wheel.html. Read only.
+ * - Requires ?key= matching Script Property WHEEL_KEY (run setupWheel once).
+ * - Returns entry number + "First L." only. No phone, email or full last name.
+ * - ?since=YYYY-MM-DD (default: today, script time zone) or ?since=all.
+ * - One slot per guest: duplicate phone numbers keep the earliest entry.
+ */
+function getEntries_(params) {
+  const key = PropertiesService.getScriptProperties().getProperty('WHEEL_KEY');
+  if (!key || params.key !== key) throw new Error('Not authorized.');
+
+  const tz = Session.getScriptTimeZone();
+  const since = params.since || Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
+
+  const sub = sheet_(CONFIG.SHEETS.SUB);
+  if (sub.getLastRow() < 2) return [];
+  const rows = sub.getRange(2, 1, sub.getLastRow() - 1, 6).getValues(); // A..F: no, time, associate, first, last, phone
+
+  const seen = {};
+  const out = [];
+  rows.forEach(function (r) {
+    const no = r[0], when = r[1], first = clean_(r[3]), last = clean_(r[4]);
+    const phone = normPhone_(r[5]);
+    if (!no || !first) return;
+    if (since !== 'all') {
+      if (!(when instanceof Date)) return;
+      if (Utilities.formatDate(when, tz, 'yyyy-MM-dd') < since) return;
+    }
+    if (phone && seen[phone]) return;
+    if (phone) seen[phone] = true;
+    out.push({ n: no, name: first + (last ? ' ' + last.charAt(0).toUpperCase() + '.' : '') });
+  });
+  return out;
+}
+
+/** Run once from the editor. Creates the wheel key and logs the wheel link. */
+function setupWheel() {
+  const props = PropertiesService.getScriptProperties();
+  let key = props.getProperty('WHEEL_KEY');
+  if (!key) { key = Utilities.getUuid().replace(/-/g, '').slice(0, 16); props.setProperty('WHEEL_KEY', key); }
+  Logger.log('Wheel link: https://gg-dev-space.github.io/Wishlist/wheel.html?key=' + key);
 }
 
 function doPost(e) {
