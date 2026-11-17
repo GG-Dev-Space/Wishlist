@@ -185,7 +185,11 @@ function submitEntry(p) {
       if (hit) return { entryNo: sub.getRange(hit.getRow(), 1).getValue(), duplicate: true };
     }
 
-    const entryNo = sub.getLastRow();
+    // Next number = highest existing + 1, so deleting test rows never causes repeats.
+    const lastRow = sub.getLastRow();
+    const entryNo = lastRow > 1
+      ? Math.max.apply(null, sub.getRange(2, 1, lastRow - 1, 1).getValues().map(function (r) { return Number(r[0]) || 0; })) + 1
+      : 1;
     const now = new Date();
     const fullName = first + ' ' + last;
     const phoneFmt = fmtPhone_(phone);
