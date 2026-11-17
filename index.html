@@ -124,10 +124,13 @@
     .piece .t { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.3;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .piece .s { font-size: 12px; color: var(--ink-3); letter-spacing: .06em; font-variant-numeric: tabular-nums; margin-top: 3px; white-space: nowrap; }
-    .piece .s .ip { font: 600 15px var(--serif); color: var(--ink); letter-spacing: 0; margin-left: 10px; }
-    .piece .s .ic { font-size: 12px; margin-left: 6px; letter-spacing: 0; }
+    .piece .pr { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; font-variant-numeric: lining-nums; }
+    .piece .pr .ip { font: 600 19px/1 var(--serif); color: var(--ink); }
+    .piece .pr.sale .ip { color: var(--gold); }
+    .piece .pr s { font: 500 15px/1 var(--sans); color: var(--ink-3); text-decoration-thickness: 1.5px; }
     .piece .p { font: 600 19px var(--serif); color: var(--ink); white-space: nowrap; font-variant-numeric: lining-nums; }
-    .piece .p s { display: block; font: 500 12px var(--sans); color: var(--ink-3); text-align: right; }
+    .piece .p s { display: block; font: 500 15px var(--sans); color: var(--ink-3); text-align: right; margin-top: 3px; text-decoration-thickness: 1.5px; }
+    .piece .p.sale { color: var(--gold); }
     .x { all: unset; width: 36px; height: 36px; margin-right: -8px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--ink-3); flex: 0 0 auto; }
     .x:active { background: var(--paper); }
     .x svg { width: 14px; height: 14px; }
@@ -466,10 +469,11 @@
       var img = it.img
         ? '<img src="' + esc(sized(it.img, 160)) + '" srcset="' + esc(sized(it.img, 160)) + ' 1x, ' + esc(sized(it.img, 320)) + ' 2x" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'mono\',textContent:\'G\'}))">'
         : '<span class="mono">G</span>';
-      var price = it.priceText ? '<div class="p">' + esc(it.priceText) + (it.compareText ? '<s>' + esc(it.compareText) + '</s>' : '') + '</div>' : '';
-      // Compact rows (form) keep price inline so titles get the full width.
+      var price = it.priceText ? '<div class="p' + (it.compareText ? ' sale' : '') + '">' + esc(it.priceText) + (it.compareText ? '<s>' + esc(it.compareText) + '</s>' : '') + '</div>' : '';
+      // Compact rows (form): price on its own line under the title, sale price in gold.
       var sub = removable && it.priceText
-        ? '<div class="s">' + esc(sku) + '<span class="ip">' + esc(it.priceText) + '</span>' + (it.compareText ? '<s class="ic">' + esc(it.compareText) + '</s>' : '') + '</div>'
+        ? '<div class="pr' + (it.compareText ? ' sale' : '') + '"><span class="ip">' + esc(it.priceText) + '</span>' +
+          (it.compareText ? '<s>' + esc(it.compareText) + '</s>' : '') + '</div><div class="s">' + esc(sku) + '</div>'
         : '<div class="s">' + esc(sku) + '</div>';
       return '<div class="ph">' + img + '</div>' +
         '<div class="meta"><div class="t">' + esc(it.title) + '</div>' + sub + '</div>' + (removable ? '' : price) +
