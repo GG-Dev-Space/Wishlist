@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ladies Night Wishlist | Gem Gallery</title>
 
-  <!-- Native iOS Safari Status Bar & Address Bar Tinting -->
-  <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f4ee">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -21,198 +23,252 @@
       --paper: #f7f4ee;
       --card: #ffffff;
       --line: #e4ded3;
+      --line-2: #efe9df;
       --gold: #a8874a;
+      --gold-soft: rgba(168,135,74,.14);
       --ok: #2f6b4f;
       --bad: #a3322b;
       --bad-bg: #fbeceb;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: Inter, system-ui, -apple-system, sans-serif;
+      --ease: cubic-bezier(.2,.7,.2,1);
     }
 
     * { box-sizing: border-box; }
-
-    html {
-      background-color: var(--paper);
-      height: 100%;
-    }
-
+    html { background: var(--paper); -webkit-text-size-adjust: 100%; }
     body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--paper);
-      color: var(--ink);
-      font: 16px/1.45 Inter, system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
+      margin: 0; background: var(--paper); color: var(--ink);
+      font: 16px/1.45 var(--sans); -webkit-font-smoothing: antialiased;
+      min-height: 100vh; min-height: 100dvh;
       padding-top: env(safe-area-inset-top);
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .wrap { max-width: 520px; margin: 0 auto; padding: 24px 16px 140px; }
+    .wrap { max-width: 540px; margin: 0 auto; padding: 28px 16px 150px; }
 
-    header { text-align: center; padding: 8px 0 24px; }
-    .eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-    h1 { font: 600 36px/1.1 'Cormorant Garamond', Georgia, serif; margin: 6px 0 6px; color: var(--ink); }
+    /* Header */
+    header { text-align: center; padding: 6px 0 26px; }
+    .eyebrow { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+    h1 { font: 600 38px/1.05 var(--serif); margin: 8px 0 10px; letter-spacing: -.005em; }
+    .rule { width: 36px; height: 1px; background: var(--gold); margin: 0 auto 12px; opacity: .7; }
     .sub { color: var(--ink-2); font-size: 15px; margin: 0; }
 
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
-    .card h2 { font: 600 13px/1 Inter, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 14px; }
+    /* Steps */
+    .steps { display: flex; justify-content: center; gap: 8px; margin: 18px 0 0; }
+    .steps span { width: 22px; height: 3px; border-radius: 3px; background: var(--line); transition: background .3s var(--ease), width .3s var(--ease); }
+    .steps span.on { background: var(--gold); width: 34px; }
 
+    /* Sync pill */
+    .sync { display: none; margin: 14px auto 0; width: max-content; max-width: 100%; font-size: 12px; font-weight: 500;
+      color: var(--ink-2); background: var(--card); border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px; }
+    .sync.show { display: block; }
+    .sync b { color: var(--gold); font-weight: 600; }
+
+    /* Cards */
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px;
+      box-shadow: 0 1px 0 rgba(29,36,51,.02), 0 6px 20px rgba(29,36,51,.03); }
+    .card h2 { display: flex; justify-content: space-between; align-items: baseline;
+      font: 600 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 16px; }
+    .card h2 .count { letter-spacing: .04em; text-transform: none; font-weight: 500; color: var(--ink-3); }
+
+    /* Fields */
     label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-2); margin: 0 0 6px; }
-    input {
-      width: 100%; font: 500 17px Inter, sans-serif; color: var(--ink);
-      padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    .req { color: var(--gold); }
+    .opt { float: right; font-weight: 400; color: var(--ink-3); }
+    input[type=text], input[type=tel], input[type=email] {
+      width: 100%; font: 500 17px var(--sans); color: var(--ink);
+      padding: 13px 14px; border: 1px solid var(--line); border-radius: 11px; background: #fff;
       outline: none; -webkit-appearance: none; appearance: none;
+      transition: border-color .15s, box-shadow .15s;
     }
-    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(168,135,74,.15); }
+    input::placeholder { color: #b9bdc5; font-weight: 400; }
+    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
+    input.bad { border-color: var(--bad); }
+    input.bad:focus { box-shadow: 0 0 0 3px rgba(163,50,43,.12); }
     .field { margin-bottom: 14px; }
     .field:last-child { margin-bottom: 0; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .hint { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
+    .hint button { all: unset; color: var(--gold); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 
-    .sku { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
-    .sku:first-of-type { border-top: 0; padding-top: 0; }
-    .num { font: 600 20px/48px 'Cormorant Garamond', serif; color: var(--gold); text-align: center; }
-    .sku input { font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+    /* Associate line */
+    .assoc { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .assoc .who { font-size: 15px; color: var(--ink-2); }
+    .assoc .who b { color: var(--ink); font-weight: 600; }
+    .link { all: unset; font-size: 14px; font-weight: 600; color: var(--gold); cursor: pointer; padding: 6px 0; }
+
+    /* Wishlist rows */
+    .sku { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line-2); }
+    .sku:first-child { border-top: 0; padding-top: 0; }
+    .sku.enter { animation: rise .35s var(--ease); }
+    .num { font: 600 22px/48px var(--serif); color: var(--gold); text-align: center; }
+    .sku input { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
     .sku input.ok { border-color: var(--ok); }
-    .sku input.bad { border-color: var(--bad); }
-    .info { font-size: 14px; margin-top: 6px; min-height: 0; }
-    .info .d { color: var(--ink); }
-    .info .p { color: var(--ink-2); font-variant-numeric: tabular-nums; }
-    .info.bad { color: var(--bad); }
-    .info.pending { color: var(--ink-3); }
+    .sku.filled input { display: none; }
+    .msg { font-size: 13px; margin-top: 6px; color: var(--bad); }
+    .msg:empty { display: none; }
 
-    .info-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-    .thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); flex-shrink: 0; background: #fff; }
-    .review .item img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); flex-shrink: 0; background: #fff; }
+    .piece { display: none; align-items: center; gap: 14px; padding: 4px 0; }
+    .sku.filled .piece { display: flex; animation: fade .3s var(--ease); }
+    .piece .ph { width: 64px; height: 64px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); flex: 0 0 auto; overflow: hidden; display: grid; place-items: center; }
+    .piece .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .piece .ph .mono { font: 600 20px var(--serif); color: var(--gold); }
+    .piece .meta { flex: 1; min-width: 0; }
+    .piece .t { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .piece .s { font-size: 12px; color: var(--ink-3); letter-spacing: .06em; font-variant-numeric: tabular-nums; margin-top: 3px; white-space: nowrap; }
+    .piece .s .ip { font: 600 15px var(--serif); color: var(--ink); letter-spacing: 0; margin-left: 10px; }
+    .piece .s .ic { font-size: 12px; margin-left: 6px; letter-spacing: 0; }
+    .piece .p { font: 600 19px var(--serif); color: var(--ink); white-space: nowrap; font-variant-numeric: lining-nums; }
+    .piece .p s { display: block; font: 500 12px var(--sans); color: var(--ink-3); text-align: right; }
+    .x { all: unset; width: 36px; height: 36px; margin-right: -8px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--ink-3); flex: 0 0 auto; }
+    .x:active { background: var(--paper); }
+    .x svg { width: 14px; height: 14px; }
 
-    .bar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(247,244,238,.96);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-top: 1px solid var(--line);
-      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-      z-index: 99999;
-    }
-    .bar .in { max-width: 520px; margin: 0 auto; display: flex; gap: 10px; }
-    button {
-      font: 600 16px Inter, sans-serif; border: 0; border-radius: 11px; padding: 15px 18px; cursor: pointer;
-      background: var(--ink); color: var(--paper); flex: 1;
-    }
-    button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); flex: 0 0 auto; }
-    button:disabled { opacity: .45; cursor: default; }
-
-    .check { display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; font-size: 15px; font-weight: 500; color: var(--ink); margin: 0; }
+    /* Share */
+    .check { display: flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; font-size: 15px; font-weight: 500; color: var(--ink); margin: 0; }
     .check input { appearance: none; -webkit-appearance: none; flex: 0 0 auto; width: 22px; height: 22px; padding: 0; margin: 0;
-      border: 1.5px solid var(--ink-3); border-radius: 6px; background: #fff; display: grid; place-content: center; cursor: pointer; }
-    .check input::after { content: ""; width: 11px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff;
-      transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+      border: 1.5px solid var(--ink-3); border-radius: 6px; background: #fff; display: grid; place-content: center; cursor: pointer; transition: background .15s, border-color .15s; }
+    .check input::after { content: ""; width: 11px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px,-1px); opacity: 0; }
     .check input:checked { background: var(--ink); border-color: var(--ink); }
     .check input:checked::after { opacity: 1; }
-    .send { background: var(--paper); border-radius: 12px; padding: 16px; margin-top: 12px; }
-    .send .q { margin: 0 0 14px; font: 600 20px/1.2 'Cormorant Garamond', Georgia, serif; color: var(--ink); }
-    .req { color: var(--gold); }
+    .check small { display: block; font-size: 13px; font-weight: 400; color: var(--ink-3); }
+    .send { background: var(--paper); border-radius: 12px; padding: 16px; margin-top: 12px; animation: fade .25s var(--ease); }
+    .send .q { margin: 0 0 14px; font: 600 21px/1.2 var(--serif); }
 
-    .err { display: none; background: var(--bad-bg); color: var(--bad); border-radius: 10px; padding: 12px 14px; font-size: 14px; margin-bottom: 14px; }
-    .err.show { display: block; }
+    /* Errors */
+    .err { display: none; background: var(--bad-bg); color: var(--bad); border-radius: 11px; padding: 12px 14px; font-size: 14px; font-weight: 500; margin-bottom: 14px; }
+    .err.show { display: block; animation: fade .2s var(--ease); }
 
-    .review dl { margin: 0; }
-    .review dt { font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .1em; margin-top: 10px; }
-    .review dd { margin: 2px 0 0; }
-    .review .item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
-    .review .item:first-child { border-top: 0; }
-    .review .item .s { color: var(--ink-3); font-size: 13px; font-variant-numeric: tabular-nums; }
+    /* Review */
+    .review dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; }
+    .review dt { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .12em; padding-top: 3px; }
+    .review dd { margin: 0; font-size: 15px; word-break: break-word; }
+    .review .list .piece { display: flex; padding: 12px 0; border-top: 1px solid var(--line-2); }
+    .review .list .piece:first-child { border-top: 0; padding-top: 0; }
+    .total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; font-size: 13px; color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; }
+    .total b { font: 600 20px var(--serif); color: var(--ink); letter-spacing: 0; text-transform: none; }
 
-    /* Enhanced Thank You Screen */
-    .done { text-align: center; padding: 36px 14px 20px; }
-    .done-heading { font: 600 42px/1.1 'Cormorant Garamond', Georgia, serif; color: var(--ink); margin: 12px 0 10px; }
-    .done-text { font-size: 17px; line-height: 1.5; color: var(--ink-2); margin: 0 0 28px; }
-    .done-callout {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 22px 18px;
-      margin-top: 12px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.03);
-    }
-    .callout-eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 6px; }
-    .callout-time { font: 600 26px/1.2 'Cormorant Garamond', Georgia, serif; color: var(--ink); margin: 0 0 6px; }
-    .callout-note { font-size: 14px; color: var(--ink-2); margin: 0; font-weight: 500; }
+    /* Done */
+    .done { text-align: center; padding: 30px 6px 10px; }
+    .seal { width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%; border: 1px solid var(--gold); display: grid; place-items: center; animation: pop .5s var(--ease); }
+    .seal svg { width: 26px; height: 26px; color: var(--gold); }
+    .done-heading { font: 600 44px/1.05 var(--serif); margin: 10px 0 12px; }
+    .done-text { font-size: 17px; color: var(--ink-2); margin: 0 auto 26px; max-width: 34ch; }
+    .done-callout { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px 18px; box-shadow: 0 6px 20px rgba(29,36,51,.04); }
+    .callout-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 8px; }
+    .callout-time { font: 600 30px/1.1 var(--serif); margin: 0 0 8px; }
+    .callout-note { font-size: 14px; color: var(--ink-2); margin: 0; }
+    .queued { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
 
-    .loading { text-align: center; color: var(--ink-3); padding: 60px 0; }
+    /* Loading */
+    .loading { text-align: center; color: var(--ink-3); padding: 70px 0; font-size: 15px; }
+    .spinner { width: 26px; height: 26px; margin: 0 auto 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--gold); animation: spin .8s linear infinite; }
+    .loading button { margin-top: 18px; flex: none; }
+
+    /* Bar */
+    .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      background: rgba(247,244,238,.92); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+      border-top: 1px solid var(--line); padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+    .bar .in { max-width: 540px; margin: 0 auto; display: flex; gap: 10px; }
+    button { font: 600 16px var(--sans); border: 0; border-radius: 12px; padding: 16px 20px; cursor: pointer;
+      background: var(--ink); color: var(--paper); flex: 1; transition: transform .1s, opacity .2s; }
+    button:active { transform: scale(.985); }
+    button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); flex: 0 0 auto; }
+    button:disabled { opacity: .5; cursor: default; transform: none; }
+
     .hidden { display: none !important; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop  { 0% { opacity: 0; transform: scale(.85); } 100% { opacity: 1; transform: none; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   </style>
 </head>
 <body>
-  <div class="wrap" id="appWrap">
+  <div class="wrap">
     <header id="pageHeader">
       <div class="eyebrow">Gem Gallery</div>
-      <h1>Ladies Night Wishlist</h1>
-      <p class="sub">One entry per guest.</p>
+      <h1 id="title">Ladies Night Wishlist</h1>
+      <div class="rule"></div>
+      <p class="sub" id="sub">Choose up to five pieces. One entry per guest.</p>
+      <div class="steps" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+      <div class="sync" id="sync" role="status"></div>
     </header>
 
-    <div id="loading" class="loading">Loading inventory…</div>
+    <div id="loading" class="loading" role="status">
+      <div class="spinner"></div>
+      <div id="loadingText">Loading the collection…</div>
+    </div>
 
-    <!-- Step 1: form -->
+    <!-- Step 1 -->
     <form id="form" class="hidden" autocomplete="off" novalidate>
-      <div id="err" class="err"></div>
-
-      <div class="card">
-        <h2>Associate</h2>
-        <div class="field">
-          <label for="associate">Associate</label>
-          <input id="associate" type="text" autocapitalize="words" placeholder="Enter associate name (optional)">
-        </div>
-      </div>
+      <div id="err" class="err" role="alert"></div>
 
       <div class="card">
         <h2>Guest</h2>
         <div class="field">
           <label for="phone">Mobile number <span class="req">*</span></label>
-          <input id="phone" type="tel" inputmode="tel" placeholder="(406) 555-0142">
+          <input id="phone" type="tel" inputmode="tel" placeholder="(406) 555-0142" autocomplete="off" enterkeyhint="next">
         </div>
         <div class="row field">
-          <div><label for="first">First name <span class="req">*</span></label><input id="first" type="text" autocapitalize="words"></div>
-          <div><label for="last">Last name <span class="req">*</span></label><input id="last" type="text" autocapitalize="words"></div>
+          <div><label for="first">First name <span class="req">*</span></label><input id="first" type="text" autocapitalize="words" enterkeyhint="next"></div>
+          <div><label for="last">Last name <span class="req">*</span></label><input id="last" type="text" autocapitalize="words" enterkeyhint="next"></div>
         </div>
         <div class="field">
           <label for="email">Email <span class="req">*</span></label>
-          <input id="email" type="email" inputmode="email" autocapitalize="off" placeholder="name@example.com">
+          <input id="email" type="email" inputmode="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="name@example.com" enterkeyhint="next">
+          <div class="hint hidden" id="emailHint"></div>
         </div>
       </div>
 
       <div class="card">
-        <h2>Wishlist</h2>
+        <h2>Wishlist <span class="count" id="count"></span></h2>
         <div id="skus"></div>
+      </div>
+
+      <div class="card" id="assocCard">
+        <h2>Helped by</h2>
+        <div class="assoc hidden" id="assocSet">
+          <div class="who"><b id="assocName"></b></div>
+          <button type="button" class="link" id="assocChange">Change</button>
+        </div>
+        <div class="field" id="assocEdit">
+          <label for="associate">Associate name <span class="opt">Optional</span></label>
+          <input id="associate" type="text" autocapitalize="words" placeholder="Who helped you today?" enterkeyhint="done">
+        </div>
       </div>
 
       <div class="card">
         <h2>Share</h2>
-        <label class="check" for="sendOn"><input id="sendOn" type="checkbox"> Send this wishlist to someone</label>
+        <label class="check" for="sendOn"><input id="sendOn" type="checkbox"><span>Send this wishlist to someone<small>A partner, a friend, a very good hint.</small></span></label>
         <div class="send hidden" id="sendBox">
-          <p class="q">Who do you want us to send this wishlist to?</p>
+          <p class="q">Who should receive it?</p>
           <div class="row field">
             <div><label for="sendFirst">First name <span class="req">*</span></label><input id="sendFirst" type="text" autocapitalize="words"></div>
             <div><label for="sendLast">Last name <span class="req">*</span></label><input id="sendLast" type="text" autocapitalize="words"></div>
           </div>
           <div class="field">
             <label for="sendEmail">Email <span class="req">*</span></label>
-            <input id="sendEmail" type="email" inputmode="email" autocapitalize="off" placeholder="name@example.com">
+            <input id="sendEmail" type="email" inputmode="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="name@example.com">
+            <div class="hint hidden" id="sendEmailHint"></div>
           </div>
         </div>
       </div>
     </form>
 
-    <!-- Step 2: review -->
+    <!-- Step 2 -->
     <div id="review" class="hidden">
-      <div id="err2" class="err"></div>
+      <div id="err2" class="err" role="alert"></div>
       <div class="card review">
         <h2>Guest</h2>
         <dl id="revGuest"></dl>
       </div>
       <div class="card review">
-        <h2>Wishlist</h2>
-        <div id="revItems"></div>
+        <h2>Wishlist <span class="count" id="revCount"></span></h2>
+        <div class="list" id="revItems"></div>
+        <div class="total hidden" id="revTotal">Wishlist value <b id="revTotalVal"></b></div>
       </div>
       <div class="card review hidden" id="revSendCard">
         <h2>Send to</h2>
@@ -220,17 +276,18 @@
       </div>
     </div>
 
-    <!-- Step 3: done -->
-    <div id="done" class="hidden done">
-      <div class="eyebrow">Entry Confirmed</div>
-      <h2 class="done-heading" id="doneHeading">Thank You!</h2>
+    <!-- Step 3 -->
+    <div id="done" class="hidden done" aria-live="polite">
+      <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <div class="eyebrow">Entry confirmed</div>
+      <h2 class="done-heading" id="doneHeading">Thank you</h2>
       <p class="done-text" id="doneMsg"></p>
-
       <div class="done-callout">
-        <div class="callout-eyebrow">Raffle Drawing</div>
-        <div class="callout-time">7:45 PM Tonight</div>
-        <p class="callout-note">Please note: You must be present at the time of the drawing to win.</p>
+        <div class="callout-eyebrow">Raffle drawing</div>
+        <div class="callout-time" id="drawTime"></div>
+        <p class="callout-note">You must be present at the drawing to win.</p>
       </div>
+      <div class="queued hidden" id="doneQueued">Saved on this device. It will sync automatically.</div>
     </div>
   </div>
 
@@ -242,60 +299,165 @@
   </div>
 
   <script>
-    var MAX = 5;
+  (function () {
+    'use strict';
+
+    /* ---------- Config: edit per event ---------- */
+    var CONFIG = {
+      apiUrl: 'https://script.google.com/macros/s/AKfycbyr0O0zMSjZ2c6p5IU3H3cPTE_cnJ6GacUMyPtkKOuZACXhKY8MwD5yMTl-HUhPyWSU/exec',
+      eventName: 'Ladies Night',
+      drawTime: '7:45 PM tonight',
+      maxItems: 5,
+      showTotal: false,          // show summed wishlist value on review
+      loadTimeoutMs: 15000,
+      submitTimeoutMs: 20000
+    };
+
+    var params = new URLSearchParams(location.search);
+    var DEMO = params.has('demo');
+    if (params.get('draw')) CONFIG.drawTime = params.get('draw');
+
+    var KEY_ASSOC = 'gg-wl-associate';
+    var KEY_QUEUE = 'gg-wl-queue';
+    var KEY_INV   = 'gg-wl-inventory';
+
+    var MAX = CONFIG.maxItems;
     var INV = {};
     var step = 'form';
+    var queueMode = false;
     var $ = function (id) { return document.getElementById(id); };
 
-    var API_URL = "https://script.google.com/macros/s/AKfycbyr0O0zMSjZ2c6p5IU3H3cPTE_cnJ6GacUMyPtkKOuZACXhKY8MwD5yMTl-HUhPyWSU/exec";
+    /* ---------- Storage (guarded) ---------- */
+    function load(k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
+    function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-    fetch(API_URL + "?action=getInventory")
-      .then(function(r) { return r.json(); })
-      .then(function(res) {
-        if (res.status === 'success') initApp(res.inventory);
-        else handleInitError(res);
-      })
-      .catch(handleInitError);
+    /* ---------- Network ---------- */
+    function fetchJSON(url, opts, ms) {
+      var ctrl = 'AbortController' in window ? new AbortController() : null;
+      var t = ctrl ? setTimeout(function () { ctrl.abort(); }, ms) : null;
+      opts = opts || {};
+      if (ctrl) opts.signal = ctrl.signal;
+      return fetch(url, opts)
+        .then(function (r) { if (!r.ok) throw new Error('Server responded ' + r.status); return r.json(); })
+        .finally(function () { if (t) clearTimeout(t); });
+    }
 
-    function initApp(inv) {
-      INV = inv || {};
+    /* ---------- Inventory ---------- */
+    function loadInventory() {
+      $('loading').innerHTML = '<div class="spinner"></div><div>Loading the collection…</div>';
+      if (DEMO) return setTimeout(function () { initApp(demoInventory(), false); }, 300);
+
+      fetchJSON(CONFIG.apiUrl + '?action=getInventory', null, CONFIG.loadTimeoutMs)
+        .then(function (res) {
+          if (res.status !== 'success') throw new Error(res.message || 'Inventory unavailable');
+          save(KEY_INV, { at: Date.now(), inv: res.inventory });
+          initApp(res.inventory, false);
+        })
+        .catch(function (e) {
+          var cached = load(KEY_INV, null);
+          if (cached && cached.inv) return initApp(cached.inv, true);
+          $('loading').innerHTML = '<div>Could not load the collection.</div><div class="hint">' + esc(e && e.message || '') +
+            '</div><button type="button" id="retry">Try again</button>';
+          $('retry').addEventListener('click', loadInventory);
+        });
+    }
+
+    // Accepts the legacy {d, p, img} shape and the richer Shopify shape.
+    function normalize(raw) {
+      var out = {};
+      Object.keys(raw || {}).forEach(function (k) {
+        var r = raw[k] || {};
+        var sku = fmtSku(k);
+        if (sku.length !== 9) return;
+        var price = num(r.price != null ? r.price : r.p);
+        var compare = num(r.compareAt);
+        out[sku] = {
+          title: r.title || r.d || 'Piece ' + sku,
+          price: price,
+          priceText: price ? money(price) : (typeof r.p === 'string' ? r.p : ''),
+          compareText: compare && price && compare > price ? money(compare) : '',
+          img: r.img || r.image || '',
+          url: r.url || ''
+        };
+      });
+      return out;
+    }
+
+    function initApp(raw, stale) {
+      INV = normalize(raw);
       buildSkuRows();
-      $('associate').value = '';
+      initAssociate();
       $('loading').classList.add('hidden');
       $('form').classList.remove('hidden');
       $('bar').classList.remove('hidden');
+      if (stale) showErr('err', 'Offline. Using the last saved collection.');
+      updateSync();
+      flushQueue();
     }
 
-    function handleInitError(e) {
-      $('loading').textContent = 'Could not load inventory. ' + (e && e.message ? e.message : '');
+    /* ---------- Associate (persists across guests) ---------- */
+    function initAssociate() {
+      var name = load(KEY_ASSOC, '');
+      $('associate').value = name;
+      setAssocMode(!!name);
     }
+    function setAssocMode(set) {
+      var name = $('associate').value.trim();
+      $('assocName').textContent = name;
+      $('assocSet').classList.toggle('hidden', !set || !name);
+      $('assocEdit').classList.toggle('hidden', set && !!name);
+    }
+    // Remembered per device: an associate's own phone keeps their name; a guest's phone starts blank.
+    $('associate').addEventListener('change', function () { save(KEY_ASSOC, this.value.trim()); });
+    $('associate').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); save(KEY_ASSOC, this.value.trim()); setAssocMode(true); this.blur(); }
+    });
+    $('assocChange').addEventListener('click', function () { setAssocMode(false); $('associate').focus(); $('associate').select(); });
+
+    /* ---------- Wishlist rows ---------- */
+    var XSVG = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg>';
 
     function buildSkuRows() {
       var wrap = $('skus');
+      wrap.innerHTML = '';
       for (var i = 0; i < MAX; i++) {
         var row = document.createElement('div');
         row.className = 'sku';
+        row.id = 'row' + i;
         row.innerHTML =
           '<div class="num">' + (i + 1) + '</div>' +
-          '<div><input id="sku' + i + '" type="text" inputmode="numeric" placeholder="000-00000" maxlength="9">' +
-          '<div class="info" id="info' + i + '"></div></div>';
+          '<div><input id="sku' + i + '" type="text" inputmode="numeric" pattern="[0-9-]*" placeholder="000-00000" maxlength="9" aria-label="Item ' + (i + 1) + ' tag number" enterkeyhint="next">' +
+          '<div class="piece" id="piece' + i + '"></div>' +
+          '<div class="msg" id="msg' + i + '" aria-live="polite"></div></div>';
         wrap.appendChild(row);
       }
-      for (var j = 0; j < MAX; j++) {
-        (function (k) {
-          $('sku' + k).addEventListener('input', function (e) {
-            e.target.value = fmtSku(e.target.value);
-            checkAll();
-            if (isValid(k) && k + 1 < MAX) $('sku' + (k + 1)).focus();
-          });
-        })(j);
-      }
+      for (var j = 0; j < MAX; j++) (function (k) {
+        var input = $('sku' + k);
+        input.addEventListener('input', function () {
+          var before = input.value;
+          input.value = fmtSku(before);
+          render();
+          if (isValid(k)) {
+            var next = firstEmpty();
+            if (next > -1 && document.activeElement === input) $('sku' + next).focus();
+          }
+        });
+        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+      })(j);
+      render();
     }
 
-    function fmtSku(v) {
-      var d = String(v).replace(/\D/g, '').slice(0, 8);
-      return d.length > 3 ? d.slice(0, 3) + '-' + d.slice(3) : d;
+    function clearRow(i) {
+      // Shift later rows up so the list stays contiguous.
+      var vals = [];
+      for (var k = 0; k < MAX; k++) if (k !== i && $('sku' + k).value) vals.push($('sku' + k).value);
+      for (var m = 0; m < MAX; m++) $('sku' + m).value = vals[m] || '';
+      render();
+      var e = firstEmpty();
+      if (e > -1) $('sku' + e).focus();
     }
+
+    function firstEmpty() { for (var i = 0; i < MAX; i++) if (!$('sku' + i).value) return i; return -1; }
 
     function skuState(i) {
       var v = $('sku' + i).value;
@@ -305,37 +467,111 @@
       if (!INV[v]) return { s: 'missing' };
       return { s: 'ok', item: INV[v] };
     }
-
     function isValid(i) { return skuState(i).s === 'ok'; }
 
-    function checkAll() {
-      for (var i = 0; i < MAX; i++) {
-        var st = skuState(i), input = $('sku' + i), info = $('info' + i);
-        input.classList.remove('ok', 'bad');
-        info.className = 'info';
-        if (st.s === 'ok') {
-          input.classList.add('ok');
-          var imgTag = st.item.img ? '<img class="thumb" src="' + esc(st.item.img) + '" alt="">' : '';
-          info.innerHTML = '<div class="info-row">' + imgTag + '<div><span class="d">' + esc(st.item.d) + '</span> <span class="p">' + esc(st.item.p) + '</span></div></div>';
-        } else if (st.s === 'missing') {
-          input.classList.add('bad'); info.classList.add('bad');
-          info.textContent = 'Not found. Check the tag.';
-        } else if (st.s === 'dup') {
-          input.classList.add('bad'); info.classList.add('bad');
-          info.textContent = 'Already on this list.';
-        } else if (st.s === 'pending') {
-          info.classList.add('pending'); info.textContent = '';
-        } else {
-          info.textContent = '';
-        }
-      }
+    function pieceHTML(sku, it, removable, idx) {
+      var img = it.img
+        ? '<img src="' + esc(sized(it.img, 160)) + '" srcset="' + esc(sized(it.img, 160)) + ' 1x, ' + esc(sized(it.img, 320)) + ' 2x" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'mono\',textContent:\'G\'}))">'
+        : '<span class="mono">G</span>';
+      var price = it.priceText ? '<div class="p">' + esc(it.priceText) + (it.compareText ? '<s>' + esc(it.compareText) + '</s>' : '') + '</div>' : '';
+      // Compact rows (form) keep price inline so titles get the full width.
+      var sub = removable && it.priceText
+        ? '<div class="s">' + esc(sku) + '<span class="ip">' + esc(it.priceText) + '</span>' + (it.compareText ? '<s class="ic">' + esc(it.compareText) + '</s>' : '') + '</div>'
+        : '<div class="s">' + esc(sku) + '</div>';
+      return '<div class="ph">' + img + '</div>' +
+        '<div class="meta"><div class="t">' + esc(it.title) + '</div>' + sub + '</div>' + (removable ? '' : price) +
+        (removable ? '<button type="button" class="x" data-x="' + idx + '" aria-label="Remove item ' + (idx + 1) + '">' + XSVG + '</button>' : '');
     }
 
-    $('phone').addEventListener('blur', function () {
-      var d = digits(this.value);
-      if (d.length === 10) this.value = '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+    function render() {
+      var shownEmpty = false, count = 0;
+      for (var i = 0; i < MAX; i++) {
+        var st = skuState(i), row = $('row' + i), input = $('sku' + i), msg = $('msg' + i), piece = $('piece' + i);
+        var wasHidden = row.classList.contains('hidden');
+        input.classList.remove('ok', 'bad');
+        msg.textContent = '';
+        row.classList.toggle('filled', st.s === 'ok');
+
+        if (st.s === 'ok') {
+          count++;
+          if (piece.getAttribute('data-sku') !== input.value) {
+            piece.innerHTML = pieceHTML(input.value, st.item, true, i);
+            piece.setAttribute('data-sku', input.value);
+          }
+        } else {
+          piece.removeAttribute('data-sku');
+          if (st.s === 'missing') { input.classList.add('bad'); msg.textContent = 'Not found. Check the tag number.'; }
+          if (st.s === 'dup') { input.classList.add('bad'); msg.textContent = 'Already on this wishlist.'; }
+        }
+
+        // Progressive reveal: all filled rows plus one open row.
+        var show = st.s !== 'empty' || !shownEmpty;
+        if (st.s === 'empty' && !shownEmpty) shownEmpty = true;
+        row.classList.toggle('hidden', !show);
+        if (show && wasHidden) { row.classList.remove('enter'); void row.offsetWidth; row.classList.add('enter'); }
+      }
+      $('count').textContent = count ? count + ' of ' + MAX : '';
+    }
+
+    $('skus').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-x]');
+      if (b) clearRow(+b.getAttribute('data-x'));
     });
 
+    /* ---------- Guest fields ---------- */
+    $('phone').addEventListener('input', function () {
+      var d = digits(this.value).slice(0, 10);
+      var end = this.selectionStart === this.value.length;
+      if (d.length >= 7) this.value = '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+      else if (d.length >= 4) this.value = '(' + d.slice(0, 3) + ') ' + d.slice(3);
+      else this.value = d;
+      if (end) this.setSelectionRange(this.value.length, this.value.length);
+      this.classList.remove('bad');
+    });
+
+    ['first', 'last', 'email', 'sendFirst', 'sendLast', 'sendEmail'].forEach(function (id) {
+      $(id).addEventListener('input', function () { this.classList.remove('bad'); });
+    });
+
+    // Enter advances through guest fields.
+    var ORDER = ['phone', 'first', 'last', 'email'];
+    ORDER.forEach(function (id, i) {
+      $(id).addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        var next = ORDER[i + 1] ? $(ORDER[i + 1]) : $('sku' + Math.max(0, firstEmpty()));
+        if (next) next.focus();
+      });
+    });
+
+    // Email typo suggestions
+    var DOMAINS = ['gmail.com', 'yahoo.com', 'icloud.com', 'hotmail.com', 'outlook.com', 'aol.com', 'msn.com', 'live.com', 'me.com', 'comcast.net', 'msu.montana.edu'];
+    function suggest(email) {
+      var at = email.lastIndexOf('@'); if (at < 1) return '';
+      var dom = email.slice(at + 1).toLowerCase(); if (!dom || DOMAINS.indexOf(dom) > -1) return '';
+      var best = '', bestD = 3;
+      DOMAINS.forEach(function (d) { var x = lev(dom, d); if (x < bestD && x > 0) { bestD = x; best = d; } });
+      return best ? email.slice(0, at + 1) + best : '';
+    }
+    function bindSuggest(inputId, hintId) {
+      $(inputId).addEventListener('blur', function () {
+        var s = suggest(this.value.trim()), h = $(hintId);
+        if (!s) return h.classList.add('hidden');
+        h.innerHTML = 'Did you mean <button type="button">' + esc(s) + '</button>?';
+        h.classList.remove('hidden');
+        h.querySelector('button').onclick = function () { $(inputId).value = s; h.classList.add('hidden'); };
+      });
+      $(inputId).addEventListener('input', function () { $(hintId).classList.add('hidden'); });
+    }
+    bindSuggest('email', 'emailHint');
+    bindSuggest('sendEmail', 'sendEmailHint');
+
+    $('sendOn').addEventListener('change', function () {
+      $('sendBox').classList.toggle('hidden', !this.checked);
+      if (this.checked) $('sendFirst').focus();
+    });
+
+    /* ---------- Flow ---------- */
     $('mainBtn').addEventListener('click', function () {
       if (step === 'form') toReview();
       else if (step === 'review') submit();
@@ -343,12 +579,7 @@
     });
     $('backBtn').addEventListener('click', function () { show('form'); });
 
-    $('sendOn').addEventListener('change', function () {
-      $('sendBox').classList.toggle('hidden', !this.checked);
-      if (this.checked) $('sendFirst').focus();
-    });
-
-    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     function collect() {
       var skus = [];
@@ -356,93 +587,119 @@
       return {
         associate: $('associate').value.trim(),
         phone: $('phone').value,
-        first: $('first').value.trim(),
-        last: $('last').value.trim(),
-        email: $('email').value.trim(),
+        first: titleCase($('first').value.trim()),
+        last: titleCase($('last').value.trim()),
+        email: $('email').value.trim().toLowerCase(),
         skus: skus,
         send: $('sendOn').checked ? {
-          first: $('sendFirst').value.trim(),
-          last: $('sendLast').value.trim(),
-          email: $('sendEmail').value.trim()
+          first: titleCase($('sendFirst').value.trim()),
+          last: titleCase($('sendLast').value.trim()),
+          email: $('sendEmail').value.trim().toLowerCase()
         } : null
       };
     }
 
     function validate(p) {
-      if (digits(p.phone).length !== 10) return 'Enter a 10-digit mobile number.';
-      if (!p.first || !p.last) return 'Enter first and last name.';
-      if (!p.email || !EMAIL_RE.test(p.email)) return 'Enter a valid email address.';
+      if (digits(p.phone).length !== 10) return ['phone', 'Enter a 10-digit mobile number.'];
+      if (!p.first) return ['first', 'Enter a first name.'];
+      if (!p.last) return ['last', 'Enter a last name.'];
+      if (!EMAIL_RE.test(p.email)) return ['email', 'Enter a valid email address.'];
       for (var i = 0; i < MAX; i++) {
         var s = skuState(i).s;
-        if (s === 'pending' || s === 'missing' || s === 'dup') return 'Fix item ' + (i + 1) + ' before continuing.';
+        if (s === 'pending' || s === 'missing' || s === 'dup') return ['sku' + i, 'Fix item ' + (i + 1) + ' before continuing.'];
       }
-      if (!p.skus.length) return 'Add at least one item.';
+      if (!p.skus.length) return ['sku0', 'Add at least one piece to the wishlist.'];
       if (p.send) {
-        if (!p.send.first || !p.send.last) return 'Enter the first and last name of the person to send this to.';
-        if (!p.send.email || !EMAIL_RE.test(p.send.email)) return 'Enter a valid email address for the person to send this to.';
+        if (!p.send.first) return ['sendFirst', 'Enter the recipient’s first name.'];
+        if (!p.send.last) return ['sendLast', 'Enter the recipient’s last name.'];
+        if (!EMAIL_RE.test(p.send.email)) return ['sendEmail', 'Enter a valid email for the recipient.'];
       }
-      return '';
+      return null;
     }
 
     function toReview() {
-      var p = collect(), msg = validate(p);
-      if (msg) return showErr('err', msg);
+      var p = collect(), v = validate(p);
+      if (v) {
+        showErr('err', v[1]);
+        var el = $(v[0]); el.classList.add('bad');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(function () { el.focus({ preventScroll: true }); }, 250);
+        return;
+      }
       showErr('err', '');
-      $('revGuest').innerHTML =
-        '<dt>Name</dt><dd>' + esc(p.first + ' ' + p.last) + '</dd>' +
-        '<dt>Mobile</dt><dd>' + esc($('phone').value) + '</dd>' +
-        '<dt>Email</dt><dd>' + esc(p.email) + '</dd>';
+      var rows = [['Name', p.first + ' ' + p.last], ['Mobile', $('phone').value], ['Email', p.email]];
+      if (p.associate) rows.push(['Helped by', p.associate]);
+      $('revGuest').innerHTML = dl(rows);
+
+      var total = 0;
       $('revItems').innerHTML = p.skus.map(function (s) {
-        var imgTag = INV[s].img ? '<img src="' + esc(INV[s].img) + '" alt="">' : '';
-        return '<div class="item" style="display:flex;align-items:center;gap:12px;">' + imgTag + '<div style="flex:1;">' + esc(INV[s].d) + '<div class="s">' + s + '</div></div><div>' + esc(INV[s].p) + '</div></div>';
+        total += INV[s].price || 0;
+        return '<div class="piece">' + pieceHTML(s, INV[s], false) + '</div>';
       }).join('');
+      $('revCount').textContent = p.skus.length + (p.skus.length === 1 ? ' piece' : ' pieces');
+      $('revTotal').classList.toggle('hidden', !(CONFIG.showTotal && total));
+      $('revTotalVal').textContent = money(total);
+
       $('revSendCard').classList.toggle('hidden', !p.send);
-      $('revSend').innerHTML = p.send ?
-        '<dt>Name</dt><dd>' + esc(p.send.first + ' ' + p.send.last) + '</dd>' +
-        '<dt>Email</dt><dd>' + esc(p.send.email) + '</dd>' : '';
+      $('revSend').innerHTML = p.send ? dl([['Name', p.send.first + ' ' + p.send.last], ['Email', p.send.email]]) : '';
       show('review');
+    }
+
+    function buildPayload() {
+      var p = collect();
+      p.entryId = uid();
+      p.createdAt = new Date().toISOString();
+      p.event = CONFIG.eventName;
+      p.items = p.skus.map(function (s) { return { sku: s, title: INV[s].title, price: INV[s].price || null, url: INV[s].url || '' }; });
+      return p;
+    }
+
+    function post(payload) {
+      if (DEMO) return new Promise(function (r) { setTimeout(function () { r({ status: 'success' }); }, 600); });
+      return fetchJSON(CONFIG.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }, CONFIG.submitTimeoutMs);
     }
 
     function submit() {
       var btn = $('mainBtn');
       btn.disabled = true; btn.textContent = 'Saving…';
-      var payload = collect();
+      showErr('err2', '');
+      var payload = buildPayload();
 
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(res) {
-        if (res.status === 'success') handleSubmitSuccess();
-        else handleSubmitError(res);
-      })
-      .catch(handleSubmitError);
+      post(payload)
+        .then(function (res) {
+          if (res.status === 'success') return finish(payload, false);
+          throw Object.assign(new Error(res.message || 'Could not save. Try again.'), { server: true });
+        })
+        .catch(function (e) {
+          btn.disabled = false; btn.textContent = 'Submit entry';
+          if (e && e.server) return showErr('err2', e.message);
+          // Network failure or timeout: hold it locally and sync later.
+          enqueue(payload);
+          finish(payload, true);
+        });
     }
 
-    function handleSubmitSuccess() {
-      var btn = $('mainBtn');
-      btn.disabled = false;
-      var guestName = $('first').value.trim();
-      $('doneHeading').textContent = 'Thank You, ' + guestName + '!';
-      $('doneMsg').textContent = 'Your wishlist has been submitted and your raffle ticket is entered.';
+    function finish(payload, queued) {
+      $('mainBtn').disabled = false;
+      $('doneHeading').textContent = 'Thank you, ' + payload.first + '.';
+      $('doneMsg').textContent = 'Your wishlist is saved and your raffle entry is in.' +
+        (payload.send ? ' We’ll send it to ' + payload.send.first + '.' : '');
+      $('doneQueued').classList.toggle('hidden', !queued);
       show('done');
     }
 
-    function handleSubmitError(e) {
-      var btn = $('mainBtn');
-      btn.disabled = false; btn.textContent = 'Submit entry';
-      showErr('err2', e && e.message ? e.message : 'Could not save. Try again.');
-    }
-
     function resetForm() {
-      ['phone', 'first', 'last', 'email', 'sendFirst', 'sendLast', 'sendEmail', 'associate'].forEach(function (id) { $(id).value = ''; });
+      ['phone', 'first', 'last', 'email', 'sendFirst', 'sendLast', 'sendEmail'].forEach(function (id) { $(id).value = ''; $(id).classList.remove('bad'); });
+      $('emailHint').classList.add('hidden'); $('sendEmailHint').classList.add('hidden');
       $('sendOn').checked = false; $('sendBox').classList.add('hidden');
       for (var i = 0; i < MAX; i++) $('sku' + i).value = '';
-      checkAll(); showErr('err', ''); showErr('err2', '');
+      render(); showErr('err', ''); showErr('err2', '');
+      setAssocMode(true);
       show('form');
-      window.scrollTo(0, 0);
       $('phone').focus();
     }
 
@@ -453,20 +710,79 @@
       $('done').classList.toggle('hidden', s !== 'done');
       $('pageHeader').classList.toggle('hidden', s === 'done');
       $('backBtn').classList.toggle('hidden', s !== 'review');
-      $('mainBtn').textContent = s === 'form' ? 'Review entry' : s === 'review' ? 'Submit entry' : 'Next guest';
+      $('mainBtn').textContent = s === 'form' ? 'Review entry' : s === 'review' ? 'Submit entry' : 'Start a new wishlist';
+      $('sub').textContent = s === 'review' ? 'Confirm the details below.' : 'Choose up to five pieces. One entry per guest.';
+      var dots = document.querySelectorAll('.steps span'), n = { form: 0, review: 1, done: 2 }[s];
+      for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === n);
       window.scrollTo(0, 0);
     }
 
-    function digits(v) {
-      var d = String(v || '').replace(/\D/g, '');
-      return d.length === 11 && d.charAt(0) === '1' ? d.slice(1) : d;
+    /* ---------- Offline queue ---------- */
+    function enqueue(p) { var q = load(KEY_QUEUE, []); q.push(p); save(KEY_QUEUE, q); updateSync(); }
+    function updateSync() {
+      var n = load(KEY_QUEUE, []).length, el = $('sync');
+      el.innerHTML = n ? '<b>' + n + '</b> ' + (n === 1 ? 'entry' : 'entries') + ' waiting to sync' : '';
+      el.classList.toggle('show', !!n);
     }
-    function esc(s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
+    function flushQueue() {
+      if (queueMode) return;
+      var q = load(KEY_QUEUE, []);
+      if (!q.length) return;
+      queueMode = true;
+      var item = q[0];
+      post(item).then(function (res) {
+        if (res.status !== 'success') throw new Error('rejected');
+        var cur = load(KEY_QUEUE, []).filter(function (x) { return x.entryId !== item.entryId; });
+        save(KEY_QUEUE, cur);
+        queueMode = false; updateSync();
+        if (cur.length) flushQueue();
+      }).catch(function () { queueMode = false; updateSync(); });
     }
+    window.addEventListener('online', flushQueue);
+    setInterval(flushQueue, 30000);
+
+    /* ---------- Helpers ---------- */
+    function fmtSku(v) { var d = String(v).replace(/\D/g, '').slice(0, 8); return d.length > 3 ? d.slice(0, 3) + '-' + d.slice(3) : d; }
+    function digits(v) { var d = String(v || '').replace(/\D/g, ''); return d.length === 11 && d.charAt(0) === '1' ? d.slice(1) : d; }
+    function num(v) { if (v == null || v === '') return 0; var n = parseFloat(String(v).replace(/[^0-9.]/g, '')); return isFinite(n) ? n : 0; }
+    function money(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
+    function titleCase(s) { return s && s === s.toLowerCase() ? s.replace(/(^|[\s'-])(\p{L})/gu, function (m, a, b) { return a + b.toUpperCase(); }) : s; }
+    function sized(url, w) {
+      if (!/cdn\.shopify\.com|\/cdn\/shop\//.test(url)) return url;
+      return url.replace(/([?&])width=\d+&?/, '$1').replace(/[?&]$/, '') + (url.indexOf('?') > -1 ? '&' : '?') + 'width=' + w;
+    }
+    function uid() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    }
+    function lev(a, b) {
+      var m = [], i, j;
+      for (i = 0; i <= b.length; i++) m[i] = [i];
+      for (j = 0; j <= a.length; j++) m[0][j] = j;
+      for (i = 1; i <= b.length; i++) for (j = 1; j <= a.length; j++)
+        m[i][j] = b[i - 1] === a[j - 1] ? m[i - 1][j - 1] : Math.min(m[i - 1][j - 1] + 1, m[i][j - 1] + 1, m[i - 1][j] + 1);
+      return m[b.length][a.length];
+    }
+    function dl(rows) { return rows.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join(''); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function showErr(id, msg) { $(id).textContent = msg; $(id).classList.toggle('show', !!msg); }
+
+    function demoInventory() {
+      var swatch = function (a, b) {
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><radialGradient id="g" cx=".35" cy=".3"><stop offset="0" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></radialGradient></defs><rect width="80" height="80" fill="#f2eee7"/><circle cx="40" cy="40" r="20" fill="url(#g)"/></svg>');
+      };
+      return {
+        '101-00001': { title: 'Yogo Sapphire Halo Ring, 14K Yellow Gold', price: 4850, img: swatch('#5b7fd6', '#1b2a6b') },
+        '101-00002': { title: 'Montana Sapphire Teal Pendant', price: 1295, compareAt: 1650, img: swatch('#5fc2b4', '#1d5c58') },
+        '101-00003': { d: 'Diamond Tennis Bracelet, 3.00 ctw', p: '$6,400', img: swatch('#ffffff', '#b8bcc6') },
+        '101-00004': { title: 'Rose Gold Stacking Band', price: 640 },
+        '101-00005': { title: 'Parti Sapphire Stud Earrings', price: 980, img: swatch('#d9b45a', '#3e6f8e') }
+      };
+    }
+
+    $('drawTime').textContent = CONFIG.drawTime;
+    loadInventory();
+  })();
   </script>
 </body>
 </html>
