@@ -81,7 +81,17 @@
       outline: none; -webkit-appearance: none; appearance: none;
       transition: border-color .15s, box-shadow .15s;
     }
-    input::placeholder { color: #b9bdc5; font-weight: 400; }
+    input::placeholder { color: #d0d3d9; font-weight: 400; opacity: 1; }
+    select {
+      width: 100%; font: 500 17px var(--sans); color: var(--ink);
+      padding: 13px 40px 13px 14px; border: 1px solid var(--line); border-radius: 11px; outline: none;
+      -webkit-appearance: none; appearance: none; cursor: pointer;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23a8874a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 15px center;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
+    select.empty { color: #b3b7bf; font-weight: 400; }
+    select option { color: var(--ink); }
     input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
     input.bad { border-color: var(--bad); }
     input.bad:focus { box-shadow: 0 0 0 3px rgba(163,50,43,.12); }
@@ -92,10 +102,6 @@
     .hint button { all: unset; color: var(--gold); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 
     /* Associate line */
-    .assoc { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .assoc .who { font-size: 15px; color: var(--ink-2); }
-    .assoc .who b { color: var(--ink); font-weight: 600; }
-    .link { all: unset; font-size: 14px; font-weight: 600; color: var(--gold); cursor: pointer; padding: 6px 0; }
 
     /* Wishlist rows */
     .sku { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line-2); }
@@ -107,6 +113,7 @@
     .sku.filled input { display: none; }
     .msg { font-size: 13px; margin-top: 6px; color: var(--bad); }
     .msg:empty { display: none; }
+    .msg.wait { color: var(--ink-3); }
 
     .piece { display: none; align-items: center; gap: 14px; padding: 4px 0; }
     .sku.filled .piece { display: flex; animation: fade .3s var(--ease); }
@@ -161,10 +168,6 @@
     .callout-note { font-size: 14px; color: var(--ink-2); margin: 0; }
     .queued { margin-top: 14px; font-size: 13px; color: var(--ink-3); }
 
-    /* Loading */
-    .loading { text-align: center; color: var(--ink-3); padding: 70px 0; font-size: 15px; }
-    .spinner { width: 26px; height: 26px; margin: 0 auto 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--gold); animation: spin .8s linear infinite; }
-    .loading button { margin-top: 18px; flex: none; }
 
     /* Bar */
     .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
@@ -197,24 +200,19 @@
       <div class="sync" id="sync" role="status"></div>
     </header>
 
-    <div id="loading" class="loading" role="status">
-      <div class="spinner"></div>
-      <div id="loadingText">Loading the collection…</div>
-    </div>
-
-    <!-- Step 1 -->
-    <form id="form" class="hidden" autocomplete="off" novalidate>
+    <!-- Step 1: shows immediately; inventory loads in the background -->
+    <form id="form" autocomplete="off" novalidate>
       <div id="err" class="err" role="alert"></div>
 
       <div class="card">
         <h2>Guest</h2>
-        <div class="field">
-          <label for="phone">Mobile number <span class="req">*</span></label>
-          <input id="phone" type="tel" inputmode="tel" placeholder="(406) 555-0142" autocomplete="off" enterkeyhint="next">
-        </div>
         <div class="row field">
           <div><label for="first">First name <span class="req">*</span></label><input id="first" type="text" autocapitalize="words" enterkeyhint="next"></div>
           <div><label for="last">Last name <span class="req">*</span></label><input id="last" type="text" autocapitalize="words" enterkeyhint="next"></div>
+        </div>
+        <div class="field">
+          <label for="phone">Mobile number <span class="req">*</span></label>
+          <input id="phone" type="tel" inputmode="tel" placeholder="(406) 555-0142" autocomplete="off" enterkeyhint="next">
         </div>
         <div class="field">
           <label for="email">Email <span class="req">*</span></label>
@@ -226,18 +224,6 @@
       <div class="card">
         <h2>Wishlist <span class="count" id="count"></span></h2>
         <div id="skus"></div>
-      </div>
-
-      <div class="card" id="assocCard">
-        <h2>Helped by</h2>
-        <div class="assoc hidden" id="assocSet">
-          <div class="who"><b id="assocName"></b></div>
-          <button type="button" class="link" id="assocChange">Change</button>
-        </div>
-        <div class="field" id="assocEdit">
-          <label for="associate">Associate name <span class="opt">Optional</span></label>
-          <input id="associate" type="text" autocapitalize="words" placeholder="Who helped you today?" enterkeyhint="done">
-        </div>
       </div>
 
       <div class="card">
@@ -254,6 +240,14 @@
             <input id="sendEmail" type="email" inputmode="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="name@example.com">
             <div class="hint hidden" id="sendEmailHint"></div>
           </div>
+        </div>
+      </div>
+
+      <div class="card" id="assocCard">
+        <h2>Who helped you?</h2>
+        <div class="field">
+          <label for="associate">Associate <span class="opt">Optional</span></label>
+          <select id="associate" class="empty"></select>
         </div>
       </div>
     </form>
@@ -291,7 +285,7 @@
     </div>
   </div>
 
-  <div class="bar hidden" id="bar">
+  <div class="bar" id="bar">
     <div class="in">
       <button type="button" class="ghost hidden" id="backBtn">Edit</button>
       <button type="button" id="mainBtn">Review entry</button>
@@ -308,6 +302,7 @@
       eventName: 'Ladies Night',
       drawTime: '7:45 PM tonight',
       maxItems: 5,
+      associates: ['Jason', 'Erin', 'Brandon', 'Patty', 'Sonya', 'Ellie', 'Parker', 'Matt', 'Charlotte', 'Colby', 'Cindi'],
       showTotal: false,          // show summed wishlist value on review
       loadTimeoutMs: 15000,
       submitTimeoutMs: 20000
@@ -319,10 +314,12 @@
 
     var KEY_ASSOC = 'gg-wl-associate';
     var KEY_QUEUE = 'gg-wl-queue';
-    var KEY_INV   = 'gg-wl-inventory';
+    var KEY_INV   = 'gg-wl-inventory-v2';
 
     var MAX = CONFIG.maxItems;
     var INV = {};
+    var INV_READY = false;
+    var invRetry = null;
     var step = 'form';
     var queueMode = false;
     var $ = function (id) { return document.getElementById(id); };
@@ -342,24 +339,33 @@
         .finally(function () { if (t) clearTimeout(t); });
     }
 
-    /* ---------- Inventory ---------- */
+    /* ---------- Inventory (background, cache first) ----------
+       The form is usable immediately. A saved copy from the last visit
+       makes tag lookups instant; a fresh copy replaces it when it lands. */
     function loadInventory() {
-      $('loading').innerHTML = '<div class="spinner"></div><div>Loading the collection…</div>';
-      if (DEMO) return setTimeout(function () { initApp(demoInventory(), false); }, 300);
+      if (DEMO) return setTimeout(function () { setInventory(demoInventory(), true); }, 300);
+
+      var cached = load(KEY_INV, null);
+      if (cached && cached.inv && !INV_READY) setInventory(cached.inv, false);
 
       fetchJSON(CONFIG.apiUrl + '?action=getInventory', null, CONFIG.loadTimeoutMs)
         .then(function (res) {
           if (res.status !== 'success') throw new Error(res.message || 'Inventory unavailable');
-          save(KEY_INV, { at: Date.now(), inv: res.inventory });
-          initApp(res.inventory, false);
+          setInventory(res.inventory, true);
         })
-        .catch(function (e) {
-          var cached = load(KEY_INV, null);
-          if (cached && cached.inv) return initApp(cached.inv, true);
-          $('loading').innerHTML = '<div>Could not load the collection.</div><div class="hint">' + esc(e && e.message || '') +
-            '</div><button type="button" id="retry">Try again</button>';
-          $('retry').addEventListener('click', loadInventory);
+        .catch(function () {
+          if (INV_READY) return;               // cached copy is serving; stay quiet
+          render();                            // rows waiting on lookup say so
+          clearTimeout(invRetry);
+          invRetry = setTimeout(loadInventory, 8000);
         });
+    }
+
+    function setInventory(raw, fresh) {
+      INV = normalize(raw);
+      INV_READY = true;
+      if (fresh && !DEMO) save(KEY_INV, { at: Date.now(), inv: raw });
+      render();
     }
 
     // Accepts the legacy {d, p, img} shape and the richer Shopify shape.
@@ -383,36 +389,22 @@
       return out;
     }
 
-    function initApp(raw, stale) {
-      INV = normalize(raw);
-      buildSkuRows();
+    /* ---------- Associate (remembered per device) ---------- */
+    function buildAssociates() {
+      var sel = $('associate');
+      sel.innerHTML = '<option value="">Select an associate</option>' +
+        CONFIG.associates.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('');
       initAssociate();
-      $('loading').classList.add('hidden');
-      $('form').classList.remove('hidden');
-      $('bar').classList.remove('hidden');
-      if (stale) showErr('err', 'Offline. Using the last saved collection.');
-      updateSync();
-      flushQueue();
+      sel.addEventListener('change', function () {
+        save(KEY_ASSOC, this.value);
+        this.classList.toggle('empty', !this.value);
+      });
     }
-
-    /* ---------- Associate (persists across guests) ---------- */
     function initAssociate() {
-      var name = load(KEY_ASSOC, '');
-      $('associate').value = name;
-      setAssocMode(!!name);
+      var sel = $('associate'), name = load(KEY_ASSOC, '');
+      sel.value = CONFIG.associates.indexOf(name) > -1 ? name : '';
+      sel.classList.toggle('empty', !sel.value);
     }
-    function setAssocMode(set) {
-      var name = $('associate').value.trim();
-      $('assocName').textContent = name;
-      $('assocSet').classList.toggle('hidden', !set || !name);
-      $('assocEdit').classList.toggle('hidden', set && !!name);
-    }
-    // Remembered per device: an associate's own phone keeps their name; a guest's phone starts blank.
-    $('associate').addEventListener('change', function () { save(KEY_ASSOC, this.value.trim()); });
-    $('associate').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); save(KEY_ASSOC, this.value.trim()); setAssocMode(true); this.blur(); }
-    });
-    $('assocChange').addEventListener('click', function () { setAssocMode(false); $('associate').focus(); $('associate').select(); });
 
     /* ---------- Wishlist rows ---------- */
     var XSVG = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg>';
@@ -464,6 +456,7 @@
       if (!v) return { s: 'empty' };
       if (v.length < 9) return { s: 'pending' };
       for (var k = 0; k < i; k++) if ($('sku' + k).value === v) return { s: 'dup' };
+      if (!INV_READY) return { s: 'loading' };
       if (!INV[v]) return { s: 'missing' };
       return { s: 'ok', item: INV[v] };
     }
@@ -490,6 +483,7 @@
         var wasHidden = row.classList.contains('hidden');
         input.classList.remove('ok', 'bad');
         msg.textContent = '';
+        msg.classList.remove('wait');
         row.classList.toggle('filled', st.s === 'ok');
 
         if (st.s === 'ok') {
@@ -502,6 +496,7 @@
           piece.removeAttribute('data-sku');
           if (st.s === 'missing') { input.classList.add('bad'); msg.textContent = 'Not found. Check the tag number.'; }
           if (st.s === 'dup') { input.classList.add('bad'); msg.textContent = 'Already on this wishlist.'; }
+          if (st.s === 'loading') { msg.classList.add('wait'); msg.textContent = 'Looking up this piece…'; }
         }
 
         // Progressive reveal: all filled rows plus one open row.
@@ -534,7 +529,7 @@
     });
 
     // Enter advances through guest fields.
-    var ORDER = ['phone', 'first', 'last', 'email'];
+    var ORDER = ['first', 'last', 'phone', 'email'];
     ORDER.forEach(function (id, i) {
       $(id).addEventListener('keydown', function (e) {
         if (e.key !== 'Enter') return;
@@ -585,7 +580,7 @@
       var skus = [];
       for (var i = 0; i < MAX; i++) if (isValid(i)) skus.push($('sku' + i).value);
       return {
-        associate: $('associate').value.trim(),
+        associate: $('associate').value,
         phone: $('phone').value,
         first: titleCase($('first').value.trim()),
         last: titleCase($('last').value.trim()),
@@ -606,6 +601,7 @@
       if (!EMAIL_RE.test(p.email)) return ['email', 'Enter a valid email address.'];
       for (var i = 0; i < MAX; i++) {
         var s = skuState(i).s;
+        if (s === 'loading') return ['sku' + i, 'Still loading the collection. Try again in a moment.'];
         if (s === 'pending' || s === 'missing' || s === 'dup') return ['sku' + i, 'Fix item ' + (i + 1) + ' before continuing.'];
       }
       if (!p.skus.length) return ['sku0', 'Add at least one piece to the wishlist.'];
@@ -698,9 +694,9 @@
       $('sendOn').checked = false; $('sendBox').classList.add('hidden');
       for (var i = 0; i < MAX; i++) $('sku' + i).value = '';
       render(); showErr('err', ''); showErr('err2', '');
-      setAssocMode(true);
+      initAssociate();
       show('form');
-      $('phone').focus();
+      $('first').focus();
     }
 
     function show(s) {
@@ -781,7 +777,11 @@
     }
 
     $('drawTime').textContent = CONFIG.drawTime;
+    buildSkuRows();
+    buildAssociates();
+    updateSync();
     loadInventory();
+    flushQueue();
   })();
   </script>
 </body>
