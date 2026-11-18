@@ -75,3 +75,13 @@ An empty or failed Shopify sync always falls back to the Inventory tab.
 - **Controls:** Space or the hub to spin, F full screen, R refresh, M sound. New entries load every 20 seconds between spins.
 - **Winners:** "Remove and spin again" takes the winner out and spins for the next prize. Drawn winners are remembered on that display; "Reset winners" puts them back.
 - **Rehearse:** `wheel.html?demo=150` spins 150 sample names; nothing is read from the sheet.
+
+## Adding to a wishlist later (one raffle entry per guest)
+
+A guest can submit again later in the night to add more pieces.
+
+- **Matching:** a new submission joins tonight's earliest entry with the same mobile number, or the same email.
+- **Entry number:** the add-on reuses the original entry number, so Entry List shows every piece under one entry and the wheel gives the guest one slot.
+- **Pieces:** only new tag numbers are added. Pieces already on the list are skipped. Up to five per submission, no cap on the combined list.
+- **Audit:** every submission still gets its own row in Submissions. Column S says `Original` or `Add-on to #N`.
+- **Scope:** only same-day entries merge, so past events are never touched.

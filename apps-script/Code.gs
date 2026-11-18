@@ -17,6 +17,7 @@ const CONFIG = {
 
 const SKU_RE = /^\d{3}-\d{5}$/;
 const ENTRY_ID_COL = 18;  // Submissions column R, after Send Email
+const ENTRY_TYPE_COL = 19; // Submissions column S: "Original" or "Add-on to #N"
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function doGet(e) {
@@ -67,8 +68,9 @@ function getEntries_(params) {
       if (!(when instanceof Date)) return;
       if (Utilities.formatDate(when, tz, 'yyyy-MM-dd') < since) return;
     }
-    if (phone && seen[phone]) return;
+    if ((phone && seen[phone]) || seen['#' + no]) return;   // add-ons share the original's number
     if (phone) seen[phone] = true;
+    seen['#' + no] = true;
     out.push({ n: no, name: first + (last ? ' ' + last.charAt(0).toUpperCase() + '.' : '') });
   });
   return out;
@@ -87,7 +89,8 @@ function doPost(e) {
     const contents = JSON.parse(e.postData.contents);
     const result = submitEntry(contents);
     return ContentService
-      .createTextOutput(JSON.stringify({ status: 'success', entryNo: result.entryNo }))
+      .createTextOutput(JSON.stringify({ status: 'success', entryNo: result.entryNo, merged: !!result.merged,
+        added: result.added, skipped: result.skipped || [], total: result.total }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService
@@ -185,33 +188,73 @@ function submitEntry(p) {
       if (hit) return { entryNo: sub.getRange(hit.getRow(), 1).getValue(), duplicate: true };
     }
 
-    // Next number = highest existing + 1, so deleting test rows never causes repeats.
-    const lastRow = sub.getLastRow();
-    const entryNo = lastRow > 1
-      ? Math.max.apply(null, sub.getRange(2, 1, lastRow - 1, 1).getValues().map(function (r) { return Number(r[0]) || 0; })) + 1
-      : 1;
+    // One raffle entry per guest per night. A later submission from the same
+    // mobile number (or email) joins the guest's original entry: same entry
+    // number, only new pieces are added, still one slot on the wheel.
+    const original = findTodaysEntry_(sub, phone, email);
+    const list = sheet_(CONFIG.SHEETS.LIST);
+    let entryNo, toAdd = skus, skipped = [], already = [];
+    if (original) {
+      entryNo = original.entryNo;
+      already = listedSkus_(list, entryNo);
+      toAdd = skus.filter(function (s) { return already.indexOf(s) === -1; });
+      skipped = skus.filter(function (s) { return already.indexOf(s) > -1; });
+      if (!toAdd.length) {
+        return { entryNo: entryNo, merged: true, added: 0, skipped: skipped, total: already.length };
+      }
+    } else {
+      // Next number = highest existing + 1, so deleting test rows never causes repeats.
+      const lastRow = sub.getLastRow();
+      entryNo = lastRow > 1
+        ? Math.max.apply(null, sub.getRange(2, 1, lastRow - 1, 1).getValues().map(function (r) { return Number(r[0]) || 0; })) + 1
+        : 1;
+    }
     const now = new Date();
     const fullName = first + ' ' + last;
     const phoneFmt = fmtPhone_(phone);
 
     const subRow = [entryNo, now, associate, first, last, phoneFmt, email, status, custNo];
-    for (let i = 0; i < CONFIG.MAX_SKUS; i++) subRow.push(skus[i] || '');
+    for (let i = 0; i < CONFIG.MAX_SKUS; i++) subRow.push(toAdd[i] || '');
     subRow.push(send ? send.first : '', send ? send.last : '', sendEmail);
-    subRow.push(entryId);  // column R: Entry ID
+    subRow.push(entryId);                                              // column R: Entry ID
+    subRow.push(original ? 'Add-on to #' + entryNo : 'Original');     // column S: Entry Type
     sub.getRange(sub.getLastRow() + 1, 1, 1, subRow.length).setValues([subRow]);
 
-    const list = sheet_(CONFIG.SHEETS.LIST);
     const start = list.getLastRow() + 1;
-    const listRows = skus.map(function (s) {
+    const listRows = toAdd.map(function (s) {
       return [entryNo, status, custNo, fullName, phoneFmt, email, s, inv[s].d, inv[s].p, false, sendName, sendEmail];
     });
     list.getRange(start, 1, listRows.length, listRows[0].length).setValues(listRows);
     list.getRange(start, 10, listRows.length, 1).insertCheckboxes();
 
-    return { entryNo: entryNo };
+    return { entryNo: entryNo, merged: !!original, added: toAdd.length, skipped: skipped, total: already.length + toAdd.length };
   } finally {
     lock.releaseLock();
   }
+}
+
+/** Earliest submission made today (script time zone) with this mobile number or email. */
+function findTodaysEntry_(sub, phone, email) {
+  if (sub.getLastRow() < 2) return null;
+  const tz = Session.getScriptTimeZone();
+  const today = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
+  const rows = sub.getRange(2, 1, sub.getLastRow() - 1, 7).getValues();   // A..G
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    if (!(r[1] instanceof Date) || Utilities.formatDate(r[1], tz, 'yyyy-MM-dd') !== today) continue;
+    if (normPhone_(r[5]) === phone || (email && String(r[6]).trim().toLowerCase() === email)) {
+      return { entryNo: r[0], row: i + 2 };
+    }
+  }
+  return null;
+}
+
+/** Tag numbers already on an entry's wishlist (Entry List tab). */
+function listedSkus_(list, entryNo) {
+  if (list.getLastRow() < 2) return [];
+  return list.getRange(2, 1, list.getLastRow() - 1, 7).getValues()
+    .filter(function (r) { return String(r[0]) === String(entryNo); })
+    .map(function (r) { return normSku_(r[6]); });
 }
 
 function ss_() {

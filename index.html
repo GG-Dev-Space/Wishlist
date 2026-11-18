@@ -198,7 +198,7 @@
       <div class="eyebrow">Gem Gallery</div>
       <h1 id="title">Ladies Night Wishlist</h1>
       <div class="rule"></div>
-      <p class="sub" id="sub">Choose up to five pieces. One entry per guest.</p>
+      <p class="sub" id="sub">Choose up to five pieces at a time. One raffle entry per guest.</p>
       <div class="steps" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
       <div class="sync" id="sync" role="status"></div>
     </header>
@@ -216,6 +216,7 @@
         <div class="field">
           <label for="phone">Mobile number <span class="req">*</span></label>
           <input id="phone" type="tel" inputmode="tel" placeholder="(406) 555-0142" autocomplete="off" enterkeyhint="next">
+          <div class="hint">Already made a wishlist tonight? Use the same number and we’ll add these pieces to it.</div>
         </div>
         <div class="field">
           <label for="email">Email <span class="req">*</span></label>
@@ -671,7 +672,7 @@
 
       post(payload)
         .then(function (res) {
-          if (res.status === 'success') return finish(payload, false);
+          if (res.status === 'success') return finish(payload, false, res);
           throw Object.assign(new Error(res.message || 'Could not save. Try again.'), { server: true });
         })
         .catch(function (e) {
@@ -683,11 +684,23 @@
         });
     }
 
-    function finish(payload, queued) {
+    function finish(payload, queued, res) {
+      res = res || {};
       $('mainBtn').disabled = false;
-      $('doneHeading').textContent = 'Thank you, ' + payload.first + '.';
-      $('doneMsg').textContent = 'Your wishlist is saved and your raffle entry is in.' +
-        (payload.send ? ' We’ll send it to ' + payload.send.first + '.' : '');
+      var sendNote = payload.send ? ' We’ll send it to ' + payload.send.first + '.' : '';
+      var pieces = function (n) { return n + (n === 1 ? ' piece' : ' pieces'); };
+      if (res.merged && res.added > 0) {
+        // Add-on to an earlier wishlist tonight: same raffle entry
+        $('doneHeading').textContent = 'Added, ' + payload.first + '.';
+        $('doneMsg').textContent = pieces(res.added) + ' added. Your wishlist now has ' + pieces(res.total) +
+          ', and you’re still entered once in the raffle.' + sendNote;
+      } else if (res.merged) {
+        $('doneHeading').textContent = 'Already on your list, ' + payload.first + '.';
+        $('doneMsg').textContent = 'Those pieces were already on your wishlist. You’re entered in the raffle.';
+      } else {
+        $('doneHeading').textContent = 'Thank you, ' + payload.first + '.';
+        $('doneMsg').textContent = 'Your wishlist is saved and your raffle entry is in.' + sendNote;
+      }
       $('doneQueued').classList.toggle('hidden', !queued);
       show('done');
     }
@@ -711,7 +724,7 @@
       $('pageHeader').classList.toggle('hidden', s === 'done');
       $('backBtn').classList.toggle('hidden', s !== 'review');
       $('mainBtn').textContent = s === 'form' ? 'Review entry' : s === 'review' ? 'Submit entry' : 'Start a new wishlist';
-      $('sub').textContent = s === 'review' ? 'Confirm the details below.' : 'Choose up to five pieces. One entry per guest.';
+      $('sub').textContent = s === 'review' ? 'Confirm the details below.' : 'Choose up to five pieces at a time. One raffle entry per guest.';
       var dots = document.querySelectorAll('.steps span'), n = { form: 0, review: 1, done: 2 }[s];
       for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === n);
       window.scrollTo(0, 0);
